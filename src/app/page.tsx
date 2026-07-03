@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -16,6 +17,29 @@ import {
 } from "recharts";
 import teamData from "@/data/team_rollup.json";
 import engineerData from "@/data/engineers.json";
+
+interface AiUsageData {
+  asOf: string;
+  dataWindowDays: number;
+  totalUsersReporting: number;
+  identifiedUsers: number;
+  totalSessions: number;
+  totalTokens: number;
+  totalCostUsd: number;
+  annualisedRunRateUsd: number;
+}
+
+function useAiUsage() {
+  const [data, setData] = useState<AiUsageData | null>(null);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    fetch("/api/ai-usage")
+      .then(r => r.json())
+      .then(d => { setData(d); setLoading(false); })
+      .catch(() => setLoading(false));
+  }, []);
+  return { data, loading };
+}
 
 const COLORS = ["#6366f1", "#22d3ee", "#34d399", "#f59e0b", "#f87171"];
 
@@ -79,6 +103,7 @@ function PendingBadge() {
 }
 
 export default function Dashboard() {
+  const { data: aiData, loading: aiLoading } = useAiUsage();
   const prData = teamData.map((t) => ({ team: t.team.split(" ")[0], prs: t.prs_merged }));
   const defectData = teamData
     .filter((t) => t.defect_rate != null)
@@ -117,48 +142,59 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* AI Usage — early signal */}
+      {/* AI Usage — live from StarSight */}
       <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-lg font-semibold">AI Usage — Claude Code &amp; Codex</h2>
           <span className="inline-flex items-center gap-1.5 bg-emerald-900/40 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-full border border-emerald-700/50">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Tracing live — ramping up
+            Live · refreshes every 5 min
           </span>
         </div>
         <p className="text-slate-500 text-xs mb-5">
-          AI tracing launched <strong className="text-slate-400">Jul 2, 2026</strong> via StarSight OTEL.
-          Early-adopter data below covers the first 7 days. Full 30-day baseline available ~Aug 1.
-          Engineers reporting by work email: <strong className="text-slate-400">15 of 36</strong>.
+          AI tracing launched <strong className="text-slate-400">Jul 2, 2026</strong> via StarSight OTEL (Claude Code + Codex).
+          {aiData && !aiLoading && (
+            <> Data window: <strong className="text-slate-400">{aiData.dataWindowDays} day{aiData.dataWindowDays !== 1 ? "s" : ""}</strong>.
+            Full 30-day baseline available ~Aug 1. Last updated: {new Date(aiData.asOf).toLocaleTimeString()}.</>
+          )}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
-          <div className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">Engineers Tracing</span>
-            <span className="text-2xl font-bold text-white">15</span>
-            <span className="text-slate-500 text-xs">of 36 · rest onboarding</span>
-          </div>
-          <div className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">7-day Tokens</span>
-            <span className="text-2xl font-bold text-white">364M</span>
-            <span className="text-slate-500 text-xs">identified users only</span>
-          </div>
-          <div className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">7-day AI Spend</span>
-            <span className="text-2xl font-bold text-emerald-400">$259</span>
-            <span className="text-slate-500 text-xs">identified users only</span>
-          </div>
-          <div className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
-            <span className="text-slate-400 text-xs uppercase tracking-wider">Annualised Run Rate</span>
-            <span className="text-2xl font-bold text-white">~$13.5K</span>
-            <span className="text-slate-500 text-xs">extrapolated · partial coverage</span>
-          </div>
+          {[
+            {
+              label: "Users Reporting",
+              value: aiLoading ? "…" : `${aiData?.totalUsersReporting ?? "—"}`,
+              sub: aiLoading ? "" : `${aiData?.identifiedUsers ?? 0} by work email`,
+            },
+            {
+              label: "Total Tokens",
+              value: aiLoading ? "…" : aiData ? `${(aiData.totalTokens / 1_000_000).toFixed(0)}M` : "—",
+              sub: "all reporting users",
+            },
+            {
+              label: "Total AI Spend",
+              value: aiLoading ? "…" : aiData ? `$${aiData.totalCostUsd.toLocaleString()}` : "—",
+              sub: "since tracing launched",
+              highlight: true,
+            },
+            {
+              label: "Ann. Run Rate",
+              value: aiLoading ? "…" : aiData ? `~$${(aiData.annualisedRunRateUsd).toLocaleString()}` : "—",
+              sub: "extrapolated · partial coverage",
+            },
+          ].map(({ label, value, sub, highlight }) => (
+            <div key={label} className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
+              <span className="text-slate-400 text-xs uppercase tracking-wider">{label}</span>
+              <span className={`text-2xl font-bold ${highlight ? "text-emerald-400" : "text-white"}`}>{value}</span>
+              <span className="text-slate-500 text-xs">{sub}</span>
+            </div>
+          ))}
         </div>
         <div className="bg-slate-900/40 rounded-lg p-4 border border-slate-700/50">
           <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">What&apos;s coming once full coverage is reached</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-slate-500">
             <div className="flex items-start gap-2"><span className="text-indigo-400 mt-0.5">◎</span><span>AI active days per engineer → Power / Occasional / Dormant cohort assignment</span></div>
             <div className="flex items-start gap-2"><span className="text-indigo-400 mt-0.5">◎</span><span>Per-team token &amp; spend rollup vs loaded cost</span></div>
-            <div className="flex items-start gap-2"><span className="text-indigo-400 mt-0.5">◎</span><span>AI active days vs PRs merged scatter — see if usage correlates with throughput</span></div>
+            <div className="flex items-start gap-2"><span className="text-indigo-400 mt-0.5">◎</span><span>AI active days vs PRs merged scatter — correlation between usage and throughput</span></div>
           </div>
         </div>
       </section>
