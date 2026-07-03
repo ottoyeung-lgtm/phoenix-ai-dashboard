@@ -354,53 +354,57 @@ export default function Dashboard() {
         <p className="text-slate-500 text-xs mb-4">
           Each dot is one engineer, coloured by team. Engineers with more active AI days should trend toward higher PR output. Populate once Analytics API data lands.
         </p>
-        {engineerData.every((e) => e.ai_active_days === null) ? (
-          <div className="flex items-center justify-center h-48 rounded-lg border border-dashed border-slate-600 bg-slate-900/40">
-            <div className="text-center space-y-2">
-              <div className="text-slate-500 text-3xl">◌</div>
-              <p className="text-slate-500 text-sm">
-                Scatter plot will appear here once AI active-day data is available
-              </p>
-              <p className="text-slate-600 text-xs">X axis: AI Active Days · Y axis: PRs Merged · Colour: Team</p>
-            </div>
-          </div>
-        ) : (
-          (() => {
-            const teams = Array.from(new Set(engineerData.map((e) => e.team)));
-            const byTeam = teams.map((t) => ({
-              name: t,
-              data: engineerData
-                .filter((e) => e.team === t && e.ai_active_days !== null && e.prs_merged !== null)
-                .map((e) => ({ x: e.ai_active_days, y: e.prs_merged, id: e.id })),
-            }));
+        {(() => {
+          const withBoth = engineerData.filter(e => e.ai_active_days !== null && e.prs_merged !== null);
+          if (withBoth.length < 3) {
             return (
-              <ResponsiveContainer width="100%" height={280}>
-                <ScatterChart margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis
-                    type="number" dataKey="x" name="AI Active Days"
-                    domain={[0, 30]} label={{ value: "AI Active Days", position: "insideBottom", offset: -2, fill: "#64748b", fontSize: 11 }}
-                    tick={{ fill: "#94a3b8", fontSize: 11 }}
-                  />
-                  <YAxis
-                    type="number" dataKey="y" name="PRs Merged"
-                    tick={{ fill: "#94a3b8", fontSize: 11 }}
-                  />
-                  <ZAxis range={[60, 60]} />
-                  <Tooltip
-                    cursor={{ strokeDasharray: "3 3" }}
-                    contentStyle={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 8 }}
-                    formatter={(v, name) => [v, name]}
-                  />
-                  <Legend wrapperStyle={{ fontSize: 12, color: "#94a3b8" }} />
-                  {byTeam.map((t, i) => (
-                    <Scatter key={t.name} name={t.name} data={t.data} fill={COLORS[i % COLORS.length]} opacity={0.85} />
-                  ))}
-                </ScatterChart>
-              </ResponsiveContainer>
+              <div className="flex items-center justify-center h-48 rounded-lg border border-dashed border-slate-600 bg-slate-900/40">
+                <div className="text-center space-y-2">
+                  <div className="text-slate-500 text-3xl">◌</div>
+                  <p className="text-slate-500 text-sm">
+                    {withBoth.length === 0
+                      ? "Scatter plot will appear here once AI active-day data is available"
+                      : `${withBoth.length} engineer${withBoth.length > 1 ? "s" : ""} with complete data so far — needs more coverage to show meaningful correlation`}
+                  </p>
+                  <p className="text-slate-600 text-xs">X axis: AI Active Days · Y axis: PRs Merged · Colour: Team</p>
+                </div>
+              </div>
             );
-          })()
-        )}
+          }
+          const teams = Array.from(new Set(engineerData.map((e) => e.team)));
+          const byTeam = teams.map((t) => ({
+            name: t,
+            data: engineerData
+              .filter((e) => e.team === t && e.ai_active_days !== null && e.prs_merged !== null)
+              .map((e) => ({ x: e.ai_active_days, y: e.prs_merged, id: e.id })),
+          }));
+          return (
+            <ResponsiveContainer width="100%" height={280}>
+              <ScatterChart margin={{ top: 10, right: 20, left: -10, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <XAxis
+                  type="number" dataKey="x" name="AI Active Days"
+                  domain={[0, 30]} label={{ value: "AI Active Days", position: "insideBottom", offset: -2, fill: "#64748b", fontSize: 11 }}
+                  tick={{ fill: "#94a3b8", fontSize: 11 }}
+                />
+                <YAxis
+                  type="number" dataKey="y" name="PRs Merged"
+                  tick={{ fill: "#94a3b8", fontSize: 11 }}
+                />
+                <ZAxis range={[60, 60]} />
+                <Tooltip
+                  cursor={{ strokeDasharray: "3 3" }}
+                  contentStyle={{ background: "#1e293b", border: "1px solid #334155", borderRadius: 8 }}
+                  formatter={(v: number, name: string) => [v, name]}
+                />
+                <Legend wrapperStyle={{ fontSize: 12, color: "#94a3b8" }} />
+                {byTeam.map((t, i) => (
+                  <Scatter key={t.name} name={t.name} data={t.data} fill={COLORS[i % COLORS.length]} opacity={0.85} />
+                ))}
+              </ScatterChart>
+            </ResponsiveContainer>
+          );
+        })()}
       </section>
 
       {/* Footer */}
