@@ -27,6 +27,7 @@ interface AiUsageData {
   totalTokens: number;
   totalCostUsd: number;
   annualisedRunRateUsd: number;
+  byEngId: Record<string, { activeDays: number; tokens: number; costUsd: number }>;
 }
 
 function useAiUsage() {
@@ -349,13 +350,28 @@ export default function Dashboard() {
           <h3 className="text-sm font-semibold text-slate-300">
             AI Active Days vs PRs Merged — per engineer (anonymised)
           </h3>
-          <PendingBadge />
+          {aiData?.byEngId && Object.keys(aiData.byEngId).length > 0 ? (
+            <span className="inline-flex items-center gap-1.5 bg-emerald-900/40 text-emerald-400 text-xs font-medium px-3 py-1.5 rounded-full border border-emerald-700/50">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              Live · refreshes every 5 min
+            </span>
+          ) : (
+            <PendingBadge />
+          )}
         </div>
         <p className="text-slate-500 text-xs mb-4">
-          Each dot is one engineer, coloured by team. Engineers with more active AI days should trend toward higher PR output. Populate once Analytics API data lands.
+          Each dot is one engineer, coloured by team. Grows automatically as more engineers onboard to StarSight.
         </p>
         {(() => {
-          const withBoth = engineerData.filter(e => e.ai_active_days !== null && e.prs_merged !== null);
+          // Merge static throughput data with live AI data from StarSight
+          const enriched = engineerData.map(e => {
+            const live = aiData?.byEngId?.[e.id];
+            return {
+              ...e,
+              ai_active_days: live !== undefined ? live.activeDays : e.ai_active_days,
+            };
+          });
+          const withBoth = enriched.filter(e => e.ai_active_days !== null && e.prs_merged !== null);
           if (withBoth.length < 3) {
             return (
               <div className="flex items-center justify-center h-48 rounded-lg border border-dashed border-slate-600 bg-slate-900/40">
@@ -371,10 +387,10 @@ export default function Dashboard() {
               </div>
             );
           }
-          const teams = Array.from(new Set(engineerData.map((e) => e.team)));
+          const teams = Array.from(new Set(enriched.map((e) => e.team)));
           const byTeam = teams.map((t) => ({
             name: t,
-            data: engineerData
+            data: enriched
               .filter((e) => e.team === t && e.ai_active_days !== null && e.prs_merged !== null)
               .map((e) => ({ x: e.ai_active_days, y: e.prs_merged, id: e.id })),
           }));

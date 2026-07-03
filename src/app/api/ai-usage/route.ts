@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import rosterMap from "@/data/roster_map.json";
 
 const BASE = "https://knowledge.celerdata.com/starsight/api/public";
 
@@ -46,6 +47,20 @@ export async function GET() {
     if (day) u.activeDays.add(day);
   }
 
+  // Match to roster by email local part
+  const byEngId: Record<string, { activeDays: number; tokens: number; costUsd: number }> = {};
+  for (const [uid, d] of Object.entries(userMap)) {
+    if (!uid.includes("@")) continue;
+    const localPart = uid.split("@")[0];
+    const engId = (rosterMap as Record<string, string>)[localPart];
+    if (!engId) continue;
+    byEngId[engId] = {
+      activeDays: d.activeDays.size,
+      tokens: d.tokens,
+      costUsd: Math.round(d.cost * 100) / 100,
+    };
+  }
+
   const users = Object.entries(userMap).map(([id, d]) => ({
     userId: id,
     isEmail: id.includes("@"),
@@ -77,6 +92,7 @@ export async function GET() {
     totalTokens,
     totalCostUsd: Math.round(totalCost * 100) / 100,
     annualisedRunRateUsd: annualisedRunRate,
+    byEngId,
     users,
   });
 }
