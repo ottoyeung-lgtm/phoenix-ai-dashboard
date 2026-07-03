@@ -65,9 +65,9 @@
     "prs_merged": 18,
     "median_cycle_time_hrs": 45.9,
     "bug_count": 1,
-    "ai_active_days": null,
-    "ai_tokens": null,
-    "ai_spend_usd": null
+    "ai_active_days": 1,
+    "ai_tokens": 0,
+    "ai_spend_usd": 0.0
   },
   {
     "id": "Eng-08",
@@ -165,9 +165,9 @@
     "prs_merged": 50,
     "median_cycle_time_hrs": 0.8,
     "bug_count": 4,
-    "ai_active_days": null,
-    "ai_tokens": null,
-    "ai_spend_usd": null
+    "ai_active_days": 1,
+    "ai_tokens": 0,
+    "ai_spend_usd": 0.0
   },
   {
     "id": "Eng-18",
