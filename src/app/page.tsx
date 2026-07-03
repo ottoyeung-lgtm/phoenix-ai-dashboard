@@ -34,8 +34,8 @@ function useAiUsage() {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     fetch("/api/ai-usage")
-      .then(r => r.json())
-      .then(d => { setData(d); setLoading(false); })
+      .then(r => { if (!r.ok) throw new Error(`${r.status}`); return r.json(); })
+      .then((d: AiUsageData) => { setData(d); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
   return { data, loading };
@@ -69,11 +69,14 @@ const totals = teamData.reduce(
   { headcount: 0, prs: 0, bugs: 0, loaded: 0, seat: 0 }
 );
 
-const UPDATED = new Date().toLocaleDateString("en-US", {
-  month: "short",
-  day: "numeric",
-  year: "numeric",
-});
+// Computed client-side only to avoid hydration mismatch
+function useUpdatedDate() {
+  const [date, setDate] = useState("");
+  useEffect(() => {
+    setDate(new Date().toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }));
+  }, []);
+  return date;
+}
 
 function StatCard({
   label,
@@ -104,6 +107,7 @@ function PendingBadge() {
 
 export default function Dashboard() {
   const { data: aiData, loading: aiLoading } = useAiUsage();
+  const UPDATED = useUpdatedDate();
   const prData = teamData.map((t) => ({ team: t.team.split(" ")[0], prs: t.prs_merged }));
   const defectData = teamData
     .filter((t) => t.defect_rate != null)
@@ -155,7 +159,7 @@ export default function Dashboard() {
           AI tracing launched <strong className="text-slate-400">Jul 2, 2026</strong> via StarSight OTEL (Claude Code + Codex).
           {aiData && !aiLoading && (
             <> Data window: <strong className="text-slate-400">{aiData.dataWindowDays} day{aiData.dataWindowDays !== 1 ? "s" : ""}</strong>.
-            Full 30-day baseline available ~Aug 1. Last updated: {new Date(aiData.asOf).toLocaleTimeString()}.</>
+            Full 30-day baseline available ~Aug 1. Last updated: {new Date(aiData.asOf).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}.</>
           )}
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-5">
