@@ -21,27 +21,26 @@ async function fetchAll(token: string, path: string) {
 }
 
 async function fetchProviderBreakdown(token: string) {
-  // Sample 5 pages of traces in parallel (~500 traces) to estimate provider mix
-  const pages = [1, 2, 3, 4, 5];
-  const results = await Promise.all(
-    pages.map((p) =>
-      fetch(`${BASE}/traces?limit=100&page=${p}`, {
+  // Fetch 3 pages of traces sequentially (~300 traces) to sample provider mix
+  const byProvider: Record<string, { costUsd: number; traces: number }> = {};
+  for (const p of [1, 2, 3]) {
+    try {
+      const res = await fetch(`${BASE}/traces?limit=100&page=${p}`, {
         headers: { Authorization: `Bearer ${token}` },
         next: { revalidate: 300 },
-      }).then((r) => (r.ok ? r.json() : { data: [] }))
-    )
-  );
-
-  const byProvider: Record<string, { costUsd: number; traces: number }> = {};
-  for (const result of results) {
-    for (const t of result.data ?? []) {
-      const svc = (t.serviceName as string) ?? "unknown";
-      if (!byProvider[svc]) byProvider[svc] = { costUsd: 0, traces: 0 };
-      byProvider[svc].costUsd += (t.totalCost as number) ?? 0;
-      byProvider[svc].traces += 1;
+      });
+      if (!res.ok) continue;
+      const data = await res.json();
+      for (const t of data.data ?? []) {
+        const svc = (t.serviceName as string) ?? "unknown";
+        if (!byProvider[svc]) byProvider[svc] = { costUsd: 0, traces: 0 };
+        byProvider[svc].costUsd += (t.totalCost as number) ?? 0;
+        byProvider[svc].traces += 1;
+      }
+    } catch {
+      // skip failed pages
     }
   }
-  // Round costs
   for (const v of Object.values(byProvider)) {
     v.costUsd = Math.round(v.costUsd * 100) / 100;
   }
@@ -54,10 +53,8 @@ export async function GET() {
     return NextResponse.json({ error: "STARSIGHT_API_KEY not set" }, { status: 500 });
   }
 
-  const [sessions, byProvider] = await Promise.all([
-    fetchAll(token, "/sessions?"),
-    fetchProviderBreakdown(token),
-  ]);
+  const sessions = await fetchAll(token, "/sessions?");
+  const byProvider = await fetchProviderBreakdown(token);
 
   // Aggregate per user
   const userMap: Record<string, {
