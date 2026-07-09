@@ -197,24 +197,33 @@ export default function Dashboard() {
           ))}
         </div>
         {/* Provider breakdown — static from 500-trace sample */}
-        <div className="mb-5">
-          <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Provider Mix — by spend (500-trace sample)</p>
-          <div className="flex h-3 rounded-full overflow-hidden mb-3 gap-px">
-            {providerData.providers.map((p) => (
-              <div key={p.key} className={p.color} style={{ width: `${p.pct}%` }} />
-            ))}
-          </div>
-          <div className="flex flex-wrap gap-x-6 gap-y-1.5">
-            {providerData.providers.map((p) => (
-              <div key={p.key} className="flex items-center gap-1.5">
-                <span className={`w-2 h-2 rounded-full ${p.color} shrink-0`} />
-                <span className="text-slate-300 text-xs">{p.label}</span>
-                <span className={`text-xs font-medium ${p.textColor}`}>{p.pct}%</span>
+        {(() => {
+          const providers = [
+            { key: "claude-code",         label: "Claude Code (CLI)",     pct: 90.6, hex: "#6366f1" },
+            { key: "claude-code-desktop", label: "Claude Code (Desktop)", pct: 8.3,  hex: "#22d3ee" },
+            { key: "codex_cli_rs",        label: "Codex CLI",             pct: 1.1,  hex: "#f59e0b" },
+          ];
+          return (
+            <div className="mb-5">
+              <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Provider Mix — by spend (500-trace sample)</p>
+              <div className="flex h-3 rounded-full overflow-hidden mb-3" style={{ gap: "2px" }}>
+                {providers.map((p) => (
+                  <div key={p.key} style={{ width: `${p.pct}%`, backgroundColor: p.hex }} />
+                ))}
               </div>
-            ))}
-          </div>
-          <p className="text-slate-600 text-xs mt-1.5">Jul 2–9 2026 · Codex spend is entirely non-roster (CTO personal Gmail)</p>
-        </div>
+              <div className="flex flex-wrap gap-x-6 gap-y-1.5">
+                {providers.map((p) => (
+                  <div key={p.key} className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: p.hex }} />
+                    <span className="text-slate-300 text-xs">{p.label}</span>
+                    <span className="text-xs font-medium" style={{ color: p.hex }}>{p.pct}%</span>
+                  </div>
+                ))}
+              </div>
+              <p className="text-slate-600 text-xs mt-1.5">Jul 2–9 2026 · Codex spend is entirely non-roster (CTO personal Gmail)</p>
+            </div>
+          );
+        })()}
 
         <div className="bg-slate-900/40 rounded-lg p-4 border border-slate-700/50">
           <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">What&apos;s coming once full coverage is reached</p>
