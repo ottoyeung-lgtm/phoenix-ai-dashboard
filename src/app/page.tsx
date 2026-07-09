@@ -17,6 +17,7 @@ import {
 } from "recharts";
 import teamData from "@/data/team_rollup.json";
 import engineerData from "@/data/engineers.json";
+import providerData from "@/data/provider_breakdown.json";
 
 interface AiUsageData {
   asOf: string;
@@ -195,48 +196,25 @@ export default function Dashboard() {
             </div>
           ))}
         </div>
-        {/* Provider breakdown */}
-        {aiData?.byProvider && !aiLoading && (() => {
-          const PROVIDER_META: Record<string, { label: string; color: string; textColor: string }> = {
-            "claude-code":         { label: "Claude Code (CLI)",     color: "bg-indigo-500",  textColor: "text-indigo-400" },
-            "claude-code-desktop": { label: "Claude Code (Desktop)", color: "bg-cyan-500",    textColor: "text-cyan-400" },
-            "codex_cli_rs":        { label: "Codex CLI",             color: "bg-amber-500",   textColor: "text-amber-400" },
-            "starsage-slackbot":   { label: "StarSage Bot",          color: "bg-slate-500",   textColor: "text-slate-400" },
-          };
-          const entries = Object.entries(aiData.byProvider)
-            .map(([svc, v]) => ({ svc, ...v, meta: PROVIDER_META[svc] ?? { label: svc, color: "bg-slate-500", textColor: "text-slate-400" } }))
-            .sort((a, b) => b.costUsd - a.costUsd);
-          const totalSampleCost = entries.reduce((s, e) => s + e.costUsd, 0) || 1;
-          return (
-            <div className="mb-5">
-              <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Provider Mix — by spend (sampled)</p>
-              {/* Stacked bar */}
-              <div className="flex h-3 rounded-full overflow-hidden mb-3 gap-px">
-                {entries.map((e) => (
-                  <div
-                    key={e.svc}
-                    className={e.meta.color}
-                    style={{ width: `${(e.costUsd / totalSampleCost) * 100}%` }}
-                  />
-                ))}
+        {/* Provider breakdown — static from 500-trace sample */}
+        <div className="mb-5">
+          <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">Provider Mix — by spend (500-trace sample)</p>
+          <div className="flex h-3 rounded-full overflow-hidden mb-3 gap-px">
+            {providerData.providers.map((p) => (
+              <div key={p.key} className={p.color} style={{ width: `${p.pct}%` }} />
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-x-6 gap-y-1.5">
+            {providerData.providers.map((p) => (
+              <div key={p.key} className="flex items-center gap-1.5">
+                <span className={`w-2 h-2 rounded-full ${p.color} shrink-0`} />
+                <span className="text-slate-300 text-xs">{p.label}</span>
+                <span className={`text-xs font-medium ${p.textColor}`}>{p.pct}%</span>
               </div>
-              {/* Legend */}
-              <div className="flex flex-wrap gap-x-6 gap-y-1.5">
-                {entries.map((e) => (
-                  <div key={e.svc} className="flex items-center gap-1.5">
-                    <span className={`w-2 h-2 rounded-full ${e.meta.color} shrink-0`} />
-                    <span className="text-slate-300 text-xs">{e.meta.label}</span>
-                    <span className={`text-xs font-medium ${e.meta.textColor}`}>
-                      ${e.costUsd.toFixed(2)} ({((e.costUsd / totalSampleCost) * 100).toFixed(0)}%)
-                    </span>
-                    <span className="text-slate-600 text-xs">· {e.traces} traces</span>
-                  </div>
-                ))}
-              </div>
-              <p className="text-slate-600 text-xs mt-1.5">Based on 500-trace sample · Codex spend is non-roster (CTO personal Gmail)</p>
-            </div>
-          );
-        })()}
+            ))}
+          </div>
+          <p className="text-slate-600 text-xs mt-1.5">Jul 2–9 2026 · Codex spend is entirely non-roster (CTO personal Gmail)</p>
+        </div>
 
         <div className="bg-slate-900/40 rounded-lg p-4 border border-slate-700/50">
           <p className="text-slate-400 text-xs font-medium mb-2 uppercase tracking-wider">What&apos;s coming once full coverage is reached</p>
