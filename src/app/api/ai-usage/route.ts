@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import rosterMap from "@/data/roster_map.json";
 
+export const dynamic = "force-dynamic"; // never cache this route at the CDN level
+
 const BASE = "https://knowledge.celerdata.com/starsight/api/public";
 
 async function fetchAll(token: string, path: string) {
@@ -27,7 +29,7 @@ async function fetchProviderBreakdown(token: string) {
     try {
       const res = await fetch(`${BASE}/traces?limit=100&page=${p}`, {
         headers: { Authorization: `Bearer ${token}` },
-        next: { revalidate: 300 },
+        cache: "no-store",
       });
       if (!res.ok) continue;
       const data = await res.json();
