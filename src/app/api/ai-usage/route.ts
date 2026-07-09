@@ -20,13 +20,44 @@ async function fetchAll(token: string, path: string) {
   return all;
 }
 
+async function fetchProviderBreakdown(token: string) {
+  // Sample 5 pages of traces in parallel (~500 traces) to estimate provider mix
+  const pages = [1, 2, 3, 4, 5];
+  const results = await Promise.all(
+    pages.map((p) =>
+      fetch(`${BASE}/traces?limit=100&page=${p}`, {
+        headers: { Authorization: `Bearer ${token}` },
+        next: { revalidate: 300 },
+      }).then((r) => (r.ok ? r.json() : { data: [] }))
+    )
+  );
+
+  const byProvider: Record<string, { costUsd: number; traces: number }> = {};
+  for (const result of results) {
+    for (const t of result.data ?? []) {
+      const svc = (t.serviceName as string) ?? "unknown";
+      if (!byProvider[svc]) byProvider[svc] = { costUsd: 0, traces: 0 };
+      byProvider[svc].costUsd += (t.totalCost as number) ?? 0;
+      byProvider[svc].traces += 1;
+    }
+  }
+  // Round costs
+  for (const v of Object.values(byProvider)) {
+    v.costUsd = Math.round(v.costUsd * 100) / 100;
+  }
+  return byProvider;
+}
+
 export async function GET() {
   const token = process.env.STARSIGHT_API_KEY;
   if (!token) {
     return NextResponse.json({ error: "STARSIGHT_API_KEY not set" }, { status: 500 });
   }
 
-  const sessions = await fetchAll(token, "/sessions?");
+  const [sessions, byProvider] = await Promise.all([
+    fetchAll(token, "/sessions?"),
+    fetchProviderBreakdown(token),
+  ]);
 
   // Aggregate per user
   const userMap: Record<string, {
@@ -93,6 +124,7 @@ export async function GET() {
     totalCostUsd: Math.round(totalCost * 100) / 100,
     annualisedRunRateUsd: annualisedRunRate,
     byEngId,
+    byProvider,
     users,
   });
 }
