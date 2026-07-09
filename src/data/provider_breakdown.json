@@ -1,0 +1,8 @@
+{
+  "note": "Based on 500-trace sample Jul 2–9 2026. Codex spend is entirely non-roster (CTO personal Gmail).",
+  "providers": [
+    { "key": "claude-code",         "label": "Claude Code (CLI)",     "pct": 90.6, "color": "bg-indigo-500",  "textColor": "text-indigo-400" },
+    { "key": "claude-code-desktop", "label": "Claude Code (Desktop)", "pct": 8.3,  "color": "bg-cyan-500",    "textColor": "text-cyan-400" },
+    { "key": "codex_cli_rs",        "label": "Codex CLI",             "pct": 1.1,  "color": "bg-amber-500",   "textColor": "text-amber-400" }
+  ]
+}
