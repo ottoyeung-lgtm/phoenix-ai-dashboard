@@ -5,8 +5,9 @@
     "prs_merged": 151,
     "bug_count": 25,
     "defect_rate": 0.166,
-    "loaded_annual_cost": 1870736,
-    "monthly_seat_cost": 2450
+    "loaded_annual_cost_usd": 1870736,
+    "monthly_seat_cost_usd": 2450,
+    "median_cycle_time_hrs": null
   },
   {
     "team": "DW",
@@ -14,8 +15,9 @@
     "prs_merged": 190,
     "bug_count": 18,
     "defect_rate": 0.095,
-    "loaded_annual_cost": 1730940,
-    "monthly_seat_cost": 1800
+    "loaded_annual_cost_usd": 1730940,
+    "monthly_seat_cost_usd": 1800,
+    "median_cycle_time_hrs": null
   },
   {
     "team": "Query",
@@ -23,8 +25,9 @@
     "prs_merged": 83,
     "bug_count": 12,
     "defect_rate": 0.145,
-    "loaded_annual_cost": 1530883,
-    "monthly_seat_cost": 1725
+    "loaded_annual_cost_usd": 1530883,
+    "monthly_seat_cost_usd": 1725,
+    "median_cycle_time_hrs": null
   },
   {
     "team": "Agent",
@@ -32,8 +35,9 @@
     "prs_merged": 58,
     "bug_count": 0,
     "defect_rate": 0.0,
-    "loaded_annual_cost": 859120,
-    "monthly_seat_cost": 1200
+    "loaded_annual_cost_usd": 859120,
+    "monthly_seat_cost_usd": 1200,
+    "median_cycle_time_hrs": null
   },
   {
     "team": "QA",
@@ -41,7 +45,8 @@
     "prs_merged": 0,
     "bug_count": 0,
     "defect_rate": null,
-    "loaded_annual_cost": 886397,
-    "monthly_seat_cost": 1050
+    "loaded_annual_cost_usd": 886397,
+    "monthly_seat_cost_usd": 1050,
+    "median_cycle_time_hrs": null
   }
 ]
