@@ -310,7 +310,7 @@ export default function Dashboard() {
                       <span className="text-slate-600">—</span>
                     )}
                   </td>
-                  <td className="px-4 py-3 text-slate-300">{t.revert_count}</td>
+                  <td className="px-4 py-3 text-slate-300">—</td>
                   <td className="px-4 py-3 text-slate-300 whitespace-nowrap">
                     {fmt.usd(t.loaded_annual_cost_usd)}
                   </td>
