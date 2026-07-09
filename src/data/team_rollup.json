@@ -1,72 +1,47 @@
 [
   {
-    "team": "APAC",
-    "headcount": 1,
-    "prs_merged": 0,
-    "median_cycle_time_hrs": null,
-    "bug_count": 0,
-    "revert_count": 0,
-    "defect_rate": null,
-    "loaded_annual_cost_usd": 121964,
-    "monthly_seat_cost_usd": 125,
-    "ai_active_days_avg": null,
-    "ai_tokens_total": null,
-    "ai_spend_usd": null
+    "team": "Saas",
+    "headcount": 13,
+    "prs_merged": 151,
+    "bug_count": 25,
+    "defect_rate": 0.166,
+    "loaded_annual_cost": 1870736,
+    "monthly_seat_cost": 2450
   },
   {
-    "team": "Cloud Engineering",
-    "headcount": 6,
-    "prs_merged": 79,
-    "median_cycle_time_hrs": 0.8,
-    "bug_count": 7,
-    "revert_count": 0,
-    "defect_rate": 0.089,
-    "loaded_annual_cost_usd": 740137,
-    "monthly_seat_cost_usd": 650,
-    "ai_active_days_avg": null,
-    "ai_tokens_total": null,
-    "ai_spend_usd": null
-  },
-  {
-    "team": "Customer Support",
-    "headcount": 18,
-    "prs_merged": 332,
-    "median_cycle_time_hrs": 2.5,
-    "bug_count": 41,
-    "revert_count": 0,
-    "defect_rate": 0.123,
-    "loaded_annual_cost_usd": 3531994,
-    "monthly_seat_cost_usd": 1950,
-    "ai_active_days_avg": null,
-    "ai_tokens_total": null,
-    "ai_spend_usd": null
-  },
-  {
-    "team": "R&D",
-    "headcount": 2,
-    "prs_merged": 8,
-    "median_cycle_time_hrs": 411.4,
-    "bug_count": 3,
-    "revert_count": 0,
-    "defect_rate": 0.375,
-    "loaded_annual_cost_usd": 380173,
-    "monthly_seat_cost_usd": 150,
-    "ai_active_days_avg": null,
-    "ai_tokens_total": null,
-    "ai_spend_usd": null
-  },
-  {
-    "team": "Solutions Engineering",
+    "team": "DW",
     "headcount": 9,
-    "prs_merged": 65,
-    "median_cycle_time_hrs": 31.3,
-    "bug_count": 5,
-    "revert_count": 0,
-    "defect_rate": 0.077,
-    "loaded_annual_cost_usd": 1688597,
-    "monthly_seat_cost_usd": 1025,
-    "ai_active_days_avg": null,
-    "ai_tokens_total": null,
-    "ai_spend_usd": null
+    "prs_merged": 190,
+    "bug_count": 18,
+    "defect_rate": 0.095,
+    "loaded_annual_cost": 1730940,
+    "monthly_seat_cost": 1800
+  },
+  {
+    "team": "Query",
+    "headcount": 9,
+    "prs_merged": 83,
+    "bug_count": 12,
+    "defect_rate": 0.145,
+    "loaded_annual_cost": 1530883,
+    "monthly_seat_cost": 1725
+  },
+  {
+    "team": "Agent",
+    "headcount": 6,
+    "prs_merged": 58,
+    "bug_count": 0,
+    "defect_rate": 0.0,
+    "loaded_annual_cost": 859120,
+    "monthly_seat_cost": 1200
+  },
+  {
+    "team": "QA",
+    "headcount": 6,
+    "prs_merged": 0,
+    "bug_count": 0,
+    "defect_rate": null,
+    "loaded_annual_cost": 886397,
+    "monthly_seat_cost": 1050
   }
 ]
