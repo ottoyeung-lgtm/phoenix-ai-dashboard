@@ -465,17 +465,19 @@ export default function Dashboard() {
                           {e.cohort}
                         </span>
                       </td>
-                      <td className="px-3 py-2.5 text-slate-300">{e.aiDays > 0 ? e.aiDays : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.aiDays > 0 ? String(e.aiDays) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiTokens > 0 ? (e.aiTokens / 1_000_000).toFixed(1) + "M" : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiSpend > 0 ? `$${e.aiSpend.toFixed(2)}` : <span className="text-slate-600">—</span>}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{e.prs_merged ?? <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.prs_merged != null ? String(e.prs_merged) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{fmt.hrs(e.median_cycle_time_hrs)}</td>
-                      <td className="px-3 py-2.5 text-slate-300">{e.bug_count ?? <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.bug_count != null ? String(e.bug_count) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5">
-                        {e.prs_merged && e.bug_count != null
-                          ? <span className={`font-medium ${(e.bug_count/e.prs_merged) > 0.2 ? "text-red-400" : (e.bug_count/e.prs_merged) > 0.1 ? "text-amber-400" : "text-emerald-400"}`}>
-                              {(e.bug_count / e.prs_merged * 100).toFixed(0)}%
-                            </span>
+                        {e.prs_merged != null && e.prs_merged > 0 && e.bug_count != null
+                          ? (() => { const r = e.bug_count / e.prs_merged; return (
+                              <span className={`font-medium ${r > 0.2 ? "text-red-400" : r > 0.1 ? "text-amber-400" : "text-emerald-400"}`}>
+                                {(r * 100).toFixed(0)}%
+                              </span>
+                            ); })()
                           : <span className="text-slate-600">—</span>}
                       </td>
                     </tr>
