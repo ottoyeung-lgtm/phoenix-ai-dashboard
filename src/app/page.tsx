@@ -423,16 +423,82 @@ export default function Dashboard() {
         })()}
       </section>
 
+      {/* Per-Engineer Table */}
+      {(() => {
+        const enriched = engineerData.map(e => {
+          const live = aiData?.byEngId?.[e.id];
+          const aiDays = live !== undefined ? live.activeDays : (e.ai_active_days ?? 0);
+          const aiTokens = live !== undefined ? live.tokens : (e.ai_tokens ?? 0);
+          const aiSpend = live !== undefined ? live.costUsd : (e.ai_spend_usd ?? 0);
+          const cohort = aiDays >= 15 ? "Power" : aiDays >= 5 ? "Occasional" : "Dormant";
+          return { ...e, aiDays, aiTokens, aiSpend, cohort };
+        });
+        const COHORT_COLOR: Record<string, string> = {
+          Power: "text-emerald-400 bg-emerald-900/30 border-emerald-700/40",
+          Occasional: "text-amber-400 bg-amber-900/30 border-amber-700/40",
+          Dormant: "text-slate-400 bg-slate-800 border-slate-600/40",
+        };
+        return (
+          <section>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold">Engineer Detail</h2>
+              <span className="inline-flex items-center gap-1.5 bg-blue-900/40 text-blue-300 text-xs font-medium px-3 py-1.5 rounded-full border border-blue-700/50">
+                IDs anonymised · {enriched.length} engineers
+              </span>
+            </div>
+            <div className="overflow-x-auto rounded-xl border border-slate-700">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
+                    {["ID","Team","Cohort","AI Days","AI Tokens","AI Spend","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
+                      <th key={h} className="px-3 py-3 text-left font-medium whitespace-nowrap">{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {enriched.map((e, i) => (
+                    <tr key={e.id} className={`border-t border-slate-700/50 hover:bg-slate-800/40 transition-colors ${i % 2 === 0 ? "bg-slate-900/40" : "bg-slate-900/20"}`}>
+                      <td className="px-3 py-2.5 font-mono text-slate-300 text-xs">{e.id}</td>
+                      <td className="px-3 py-2.5 text-slate-300 whitespace-nowrap">{e.team}</td>
+                      <td className="px-3 py-2.5">
+                        <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${COHORT_COLOR[e.cohort]}`}>
+                          {e.cohort}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.aiDays > 0 ? e.aiDays : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.aiTokens > 0 ? (e.aiTokens / 1_000_000).toFixed(1) + "M" : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.aiSpend > 0 ? `$${e.aiSpend.toFixed(2)}` : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.prs_merged ?? <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{fmt.hrs(e.median_cycle_time_hrs)}</td>
+                      <td className="px-3 py-2.5 text-slate-300">{e.bug_count ?? <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5">
+                        {e.prs_merged && e.bug_count != null
+                          ? <span className={`font-medium ${(e.bug_count/e.prs_merged) > 0.2 ? "text-red-400" : (e.bug_count/e.prs_merged) > 0.1 ? "text-amber-400" : "text-emerald-400"}`}>
+                              {(e.bug_count / e.prs_merged * 100).toFixed(0)}%
+                            </span>
+                          : <span className="text-slate-600">—</span>}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-slate-600 text-xs mt-2">
+              Cohort: Power ≥15 AI active days · Occasional 5–14 · Dormant &lt;5. AI data live from StarSight; throughput from GitHub + Jira.
+            </p>
+          </section>
+        );
+      })()}
+
       {/* Footer */}
       <footer className="text-slate-600 text-xs pt-4 border-t border-slate-800 space-y-1">
         <p>
-          Per-person data is restricted to Finance &amp; People Ops. This view shows team-level
-          rollups only. Defect rate = bugs assigned / PRs merged (last 30 days, Jira + GitHub).
+          Engineer IDs are anonymised. Mapping available to Finance &amp; VP Eng only.
+          Defect rate = bugs assigned / PRs merged (last 30 days, Jira + GitHub).
         </p>
         <p>
-          AI Usage columns pending Analytics API access. Loaded cost includes salary, benefits, and
-          estimated employer taxes; multi-currency converted to USD at spot rates as of Jun 30,
-          2026.
+          Loaded cost includes salary, benefits, and estimated employer taxes; multi-currency
+          converted to USD at spot rates as of Jun 30, 2026.
         </p>
       </footer>
     </div>
