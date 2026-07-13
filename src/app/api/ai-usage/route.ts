@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import rosterMap from "@/data/roster_map.json";
 
-export const dynamic = "force-dynamic"; // never cache this route at the CDN level
+export const revalidate = 0; // always render fresh; does NOT override per-fetch next:{revalidate} caching
 
 const BASE = "https://knowledge.celerdata.com/starsight/api/public";
 
