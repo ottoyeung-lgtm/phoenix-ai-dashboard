@@ -6,7 +6,7 @@
     "bug_count": 25,
     "defect_rate": 0.166,
     "loaded_annual_cost_usd": 1870736,
-    "monthly_seat_cost_usd": 2450,
+    "monthly_seat_cost_usd": 1325,
     "median_cycle_time_hrs": null
   },
   {
@@ -16,7 +16,7 @@
     "bug_count": 18,
     "defect_rate": 0.095,
     "loaded_annual_cost_usd": 1730940,
-    "monthly_seat_cost_usd": 1800,
+    "monthly_seat_cost_usd": 1125,
     "median_cycle_time_hrs": null
   },
   {
@@ -26,7 +26,7 @@
     "bug_count": 12,
     "defect_rate": 0.145,
     "loaded_annual_cost_usd": 1530883,
-    "monthly_seat_cost_usd": 1725,
+    "monthly_seat_cost_usd": 900,
     "median_cycle_time_hrs": null
   },
   {
@@ -36,7 +36,7 @@
     "bug_count": 0,
     "defect_rate": 0.0,
     "loaded_annual_cost_usd": 859120,
-    "monthly_seat_cost_usd": 1200,
+    "monthly_seat_cost_usd": 750,
     "median_cycle_time_hrs": null
   },
   {
@@ -46,7 +46,7 @@
     "bug_count": 0,
     "defect_rate": null,
     "loaded_annual_cost_usd": 886397,
-    "monthly_seat_cost_usd": 1050,
+    "monthly_seat_cost_usd": 550,
     "median_cycle_time_hrs": null
   }
 ]
