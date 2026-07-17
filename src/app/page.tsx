@@ -544,6 +544,103 @@ export default function Dashboard() {
         );
       })()}
 
+      {/* Git × Jira Cross-Reference */}
+      <section className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-lg font-semibold">Git × Jira Cross-Reference</h2>
+          <span className="inline-flex items-center gap-1.5 bg-slate-700/60 text-slate-400 text-xs font-medium px-3 py-1.5 rounded-full border border-slate-600/50">
+            Static · 2026-06-17 → 2026-07-17
+          </span>
+        </div>
+        <p className="text-slate-500 text-xs mb-5">
+          180 merged PRs across 4 repos (celerdata-enterprise, celerdata-byoc-cloud, celerdata-byoc-fe, phoenixai-anywhere).
+          61 Jira issues created in the same window (CLD + CLDOBS + RB projects).
+        </p>
+
+        {/* Top stat row */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          {[
+            { label: "PRs Merged (30d)", value: "180", sub: "4 active repos" },
+            { label: "PR→Jira Link Rate", value: "0%", sub: "⚠ workflow gap", warn: true },
+            { label: "Jira Issues (30d)", value: "61", sub: "CLD · CLDOBS · RB" },
+            { label: "Resolved Bugs (Jira)", value: "2", sub: "median 8-day cycle" },
+          ].map(({ label, value, sub, warn }) => (
+            <div key={label} className="bg-slate-900/60 rounded-lg p-4 flex flex-col gap-1">
+              <span className="text-slate-400 text-xs uppercase tracking-wider">{label}</span>
+              <span className={`text-2xl font-bold ${warn ? "text-amber-400" : "text-white"}`}>{value}</span>
+              <span className={`text-xs ${warn ? "text-amber-600" : "text-slate-500"}`}>{sub}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Two-column: PR types + Jira types */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-5">
+          {/* PR breakdown */}
+          <div>
+            <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-3">PRs by Type (title prefix)</p>
+            <div className="space-y-2">
+              {[
+                { type: "Bug Fix",     count: 77,  pct: 43, color: "#f87171" },
+                { type: "Enhancement", count: 45,  pct: 25, color: "#6366f1" },
+                { type: "Other",       count: 20,  pct: 11, color: "#64748b" },
+                { type: "Feature",     count: 16,  pct: 9,  color: "#22d3ee" },
+                { type: "Test",        count: 10,  pct: 6,  color: "#34d399" },
+                { type: "Doc",         count:  8,  pct: 4,  color: "#f59e0b" },
+              ].map(({ type, count, pct, color }) => (
+                <div key={type} className="flex items-center gap-3">
+                  <span className="text-slate-400 text-xs w-24 shrink-0">{type}</span>
+                  <div className="flex-1 bg-slate-700/40 rounded-full h-2">
+                    <div className="h-2 rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+                  </div>
+                  <span className="text-slate-400 text-xs w-10 text-right">{count}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-slate-600 text-xs mt-2">68% of Bug Fix PRs close in &lt;1h — majority are backports</p>
+          </div>
+
+          {/* Jira breakdown */}
+          <div>
+            <p className="text-slate-400 text-xs font-medium uppercase tracking-wider mb-3">Jira Issues by Type (30d)</p>
+            <div className="space-y-2">
+              {[
+                { type: "Sub-task",    count: 19, pct: 31, color: "#64748b" },
+                { type: "Improvement", count: 11, pct: 18, color: "#6366f1" },
+                { type: "Bug",         count:  8, pct: 13, color: "#f87171" },
+                { type: "Story",       count:  8, pct: 13, color: "#22d3ee" },
+                { type: "Task",        count:  7, pct: 11, color: "#94a3b8" },
+                { type: "New Feature", count:  6, pct: 10, color: "#34d399" },
+                { type: "Epic",        count:  2, pct:  3, color: "#f59e0b" },
+              ].map(({ type, count, pct, color }) => (
+                <div key={type} className="flex items-center gap-3">
+                  <span className="text-slate-400 text-xs w-24 shrink-0">{type}</span>
+                  <div className="flex-1 bg-slate-700/40 rounded-full h-2">
+                    <div className="h-2 rounded-full" style={{ width: `${pct}%`, backgroundColor: color }} />
+                  </div>
+                  <span className="text-slate-400 text-xs w-10 text-right">{count}</span>
+                </div>
+              ))}
+            </div>
+            <p className="text-slate-600 text-xs mt-2">Jira status: Done 18 · In Progress 8 · Backlog 18 · Blocked 2</p>
+          </div>
+        </div>
+
+        {/* Workflow gap callout */}
+        <div className="bg-amber-900/20 border border-amber-700/40 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <span className="text-amber-400 text-lg mt-0.5">⚠</span>
+            <div>
+              <p className="text-amber-300 text-sm font-medium">Workflow gap: Jira ↔ GitHub not linked</p>
+              <p className="text-amber-700 text-xs mt-1">
+                Engineers use <code className="bg-amber-900/40 px-1 rounded">[BugFix]</code> / <code className="bg-amber-900/40 px-1 rounded">[Enhancement]</code> title prefixes rather than Jira ticket keys (e.g. CLD-123) in PR bodies.
+                Ticket-to-merge time and feature throughput tracing cannot be computed until the Jira-GitHub integration is configured.
+                Recommend: enable Jira smart-commits or add a required PR template field for the Jira ticket key.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
       <footer className="text-slate-600 text-xs pt-4 border-t border-slate-800 space-y-1">
         <p>
