@@ -482,7 +482,7 @@ export default function Dashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
-                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","AI % Cost","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
+                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","AI % Cost","PRs","Cycle Time","Bugs","Reverts","Defect Rate"].map(h => (
                       <th key={h} className="px-3 py-3 text-left font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -509,6 +509,13 @@ export default function Dashboard() {
                       <td className="px-3 py-2.5 text-slate-300">{e.prs_merged != null ? String(e.prs_merged) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{fmt.hrs(e.median_cycle_time_hrs)}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.bug_count != null ? String(e.bug_count) : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">
+                        {e.revert_count != null
+                          ? e.revert_count > 0
+                            ? <span className="text-amber-400 font-medium">{e.revert_count}</span>
+                            : <span className="text-slate-500">0</span>
+                          : <span className="text-slate-600">—</span>}
+                      </td>
                       <td className="px-3 py-2.5">
                         {e.prs_merged != null && e.prs_merged > 0 && e.bug_count != null
                           ? (() => { const r = e.bug_count / e.prs_merged; return (
