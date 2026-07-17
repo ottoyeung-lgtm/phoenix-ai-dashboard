@@ -482,7 +482,7 @@ export default function Dashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
-                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
+                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","AI % Cost","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
                       <th key={h} className="px-3 py-3 text-left font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -501,6 +501,11 @@ export default function Dashboard() {
                       <td className="px-3 py-2.5 text-slate-300">{e.aiDays > 0 ? String(e.aiDays) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiTokens > 0 ? (e.aiTokens / 1_000_000).toFixed(1) + "M" : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiSpend > 0 ? `$${e.aiSpend.toFixed(2)}` : <span className="text-slate-600">—</span>}</td>
+                      <td className="px-3 py-2.5 text-slate-300">
+                        {e.aiSpend > 0 && e.loaded_annual_cost_usd
+                          ? <span className="text-xs">{((e.aiSpend / e.loaded_annual_cost_usd) * 100).toFixed(2)}%</span>
+                          : <span className="text-slate-600">—</span>}
+                      </td>
                       <td className="px-3 py-2.5 text-slate-300">{e.prs_merged != null ? String(e.prs_merged) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{fmt.hrs(e.median_cycle_time_hrs)}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.bug_count != null ? String(e.bug_count) : <span className="text-slate-600">—</span>}</td>
