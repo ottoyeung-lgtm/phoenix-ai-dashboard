@@ -475,14 +475,14 @@ export default function Dashboard() {
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold">Engineer Detail</h2>
               <span className="inline-flex items-center gap-1.5 bg-blue-900/40 text-blue-300 text-xs font-medium px-3 py-1.5 rounded-full border border-blue-700/50">
-                IDs anonymised · {enriched.length} engineers
+                IDs anonymised · {enriched.length} people (43 eng + 5 non-eng)
               </span>
             </div>
             <div className="overflow-x-auto rounded-xl border border-slate-700">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
-                    {["ID","Team","Cohort","AI Days","AI Tokens","AI Spend","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
+                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","PRs","Cycle Time","Bugs","Defect Rate"].map(h => (
                       <th key={h} className="px-3 py-3 text-left font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -491,6 +491,7 @@ export default function Dashboard() {
                   {enriched.map((e, i) => (
                     <tr key={e.id} className={`border-t border-slate-700/50 hover:bg-slate-800/40 transition-colors ${i % 2 === 0 ? "bg-slate-900/40" : "bg-slate-900/20"}`}>
                       <td className="px-3 py-2.5 font-mono text-slate-300 text-xs">{e.id}</td>
+                      <td className="px-3 py-2.5 text-slate-400 text-xs whitespace-nowrap">{e.dept}</td>
                       <td className="px-3 py-2.5 text-slate-300 whitespace-nowrap">{e.team}</td>
                       <td className="px-3 py-2.5">
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${COHORT_COLOR[e.cohort]}`}>
