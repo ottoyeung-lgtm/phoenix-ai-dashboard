@@ -461,13 +461,14 @@ export default function Dashboard() {
           const aiDays = live !== undefined ? live.activeDays : (e.ai_active_days ?? 0);
           const aiTokens = live !== undefined ? live.tokens : (e.ai_tokens ?? 0);
           const aiSpend = live !== undefined ? live.costUsd : (e.ai_spend_usd ?? 0);
-          const cohort = aiDays >= 15 ? "Power" : aiDays >= 5 ? "Occasional" : "Dormant";
+          const cohort = aiDays === 0 ? "Never" : aiDays >= 15 ? "Power" : aiDays >= 5 ? "Occasional" : "Dormant";
           return { ...e, aiDays, aiTokens, aiSpend, cohort };
         });
         const COHORT_COLOR: Record<string, string> = {
           Power: "text-emerald-400 bg-emerald-900/30 border-emerald-700/40",
           Occasional: "text-amber-400 bg-amber-900/30 border-amber-700/40",
           Dormant: "text-slate-400 bg-slate-800 border-slate-600/40",
+          Never: "text-slate-600 bg-slate-900/50 border-slate-700/30",
         };
         return (
           <section>
@@ -517,7 +518,7 @@ export default function Dashboard() {
               </table>
             </div>
             <p className="text-slate-600 text-xs mt-2">
-              Cohort: Power ≥15 AI active days · Occasional 5–14 · Dormant &lt;5. AI data live from StarSight; throughput from GitHub + Jira.
+              Cohort: Power ≥15 AI active days · Occasional 5–14 · Dormant 1–4 · Never 0. ¹Dormant also flags anyone last active 7+ days ago regardless of total count. AI data live from StarSight; throughput from GitHub + Jira.
             </p>
           </section>
         );
