@@ -482,7 +482,7 @@ export default function Dashboard() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="bg-slate-800 text-slate-400 text-xs uppercase tracking-wider">
-                    {["ID","Dept","Team","Cohort","AI Days","AI Tokens","AI Spend","AI % Cost","PRs","Cycle Time","Bugs","Reverts","Defect Rate"].map(h => (
+                    {["ID","Dept","Team","Cohort","Seat","AI Days","AI Tokens","AI Spend","AI % Cost","PRs","Cycle Time","Bugs","Reverts","Defect Rate"].map(h => (
                       <th key={h} className="px-3 py-3 text-left font-medium whitespace-nowrap">{h}</th>
                     ))}
                   </tr>
@@ -497,6 +497,13 @@ export default function Dashboard() {
                         <span className={`text-xs font-medium px-2 py-0.5 rounded-full border ${COHORT_COLOR[e.cohort]}`}>
                           {e.cohort}
                         </span>
+                      </td>
+                      <td className="px-3 py-2.5 text-xs whitespace-nowrap">
+                        {e.monthly_seat_cost_usd === 125
+                          ? <span className="text-indigo-400">$125 Premium</span>
+                          : e.monthly_seat_cost_usd === 25
+                          ? <span className="text-slate-400">$25 Standard</span>
+                          : <span className="text-slate-600">—</span>}
                       </td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiDays > 0 ? String(e.aiDays) : <span className="text-slate-600">—</span>}</td>
                       <td className="px-3 py-2.5 text-slate-300">{e.aiTokens > 0 ? (e.aiTokens / 1_000_000).toFixed(1) + "M" : <span className="text-slate-600">—</span>}</td>
